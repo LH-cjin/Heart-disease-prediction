@@ -22,7 +22,8 @@ plt.rcParams['axes.unicode_minus'] = False   # 解决负号显示问题
 
 
 # 读取数据
-data = pd.read_csv("C:/Users/Miss.Chen/Desktop/论文/数据集/heart.csv")
+#data = pd.read_csv("C:/Users/Miss.Chen/Desktop/论文/数据集/heart.csv")
+data = pd.read_csv("heart.csv")  
 #显示 data 变量的类型
 type(data)
 
