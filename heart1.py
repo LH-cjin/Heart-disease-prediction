@@ -78,5 +78,4 @@ fig, ax = plt.subplots(figsize=(6, 4))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
 st.pyplot(fig)
 
-# （可选）下载混淆矩阵图
-st.download_button(label="下载混淆矩阵", data=fig.savefig("/mnt/data/confusion_matrix.png"), file_name="confusion_matrix.png")
+
