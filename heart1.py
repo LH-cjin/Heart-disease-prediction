@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-get_ipython().run_line_magic('matplotlib', 'inline')
+
 #导入 Matplotlib 库，用于绘图和可视化
 import os
 import matplotlib.pyplot as plt
