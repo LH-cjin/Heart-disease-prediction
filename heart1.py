@@ -16,7 +16,7 @@ from sklearn.preprocessing import StandardScaler
 st.title("基于机器学习的心脏病预测")
 
 # 从 GitHub 读取 CSV 文件
-url = "https://raw.githubusercontent.com/你的用户名/你的仓库名/main/heart.csv"  # 替换为实际 GitHub 仓库地址
+url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"  # 替换为实际 GitHub 仓库地址
 data = pd.read_csv(url)
 
 # 显示数据的前几行
