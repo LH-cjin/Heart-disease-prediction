@@ -83,8 +83,8 @@ styled_metrics = metrics_df.style \
     .set_table_styles([{
         'selector': 'th',
         'props': [('background-color', '#40466e'), 
-                ('color', 'white'),
-                ('font-size', '18px')]
+                  ('color', 'white'),
+                  ('font-size', '18px')]
     }, {
         'selector': 'td',
         'props': [('font-size', '16px')]
@@ -97,7 +97,8 @@ styled_metrics = metrics_df.style \
     })
 
 st.write("### 模型评估指标")
-st.table(styled_metrics)
+st.dataframe(styled_metrics)  # 使用 st.dataframe 来显示带有样式的表格
+
 
 # ------------------------ 混淆矩阵显示优化 ------------------------
 cm = confusion_matrix(Y_test, y_pred)
@@ -126,7 +127,7 @@ with col2:
     ax_roc.set_ylim([0.0, 1.05])
     ax_roc.set_xlabel('假阳性率 (False Positive Rate)')
     ax_roc.set_ylabel('真阳性率 (True Positive Rate)')
-    ax_roc.set_title('接收操作特征曲线 (ROC Curve)')
+    ax_roc.set_title('ROC Curve')
     ax_roc.legend(loc="lower right")
     st.pyplot(fig_roc)
 
