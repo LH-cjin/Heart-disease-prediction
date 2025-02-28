@@ -9,14 +9,14 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
 # Streamlit 标题
 st.title("基于机器学习的心脏病预测")
 
 # 从 GitHub 读取 CSV 文件
-url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"  # 替换为实际 GitHub 仓库地址
+url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"
 data = pd.read_csv(url)
 
 # 显示数据的前几行
@@ -34,8 +34,14 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# 模型选择
-model_type = st.selectbox('选择一个模型', ['逻辑回归', '朴素贝叶斯', '决策树', '随机森林', 'KNN'])
+# Sidebar: 模型选择和超参数设置
+st.sidebar.header('模型设置')
+model_type = st.sidebar.selectbox('选择一个模型', ['逻辑回归', '朴素贝叶斯', '决策树', '随机森林', 'KNN'])
+
+# 超参数配置（针对部分模型）
+max_depth = st.sidebar.slider('决策树最大深度', min_value=1, max_value=20, value=5) if model_type == '决策树' else None
+n_estimators = st.sidebar.slider('随机森林树数', min_value=10, max_value=200, value=100) if model_type == '随机森林' else None
+n_neighbors = st.sidebar.slider('KNN 邻居数', min_value=1, max_value=20, value=5) if model_type == 'KNN' else None
 
 # 训练并评估选择的模型
 if model_type == '逻辑回归':
@@ -45,13 +51,13 @@ elif model_type == '朴素贝叶斯':
     model = GaussianNB()
     model.fit(X_train_scaled, Y_train)
 elif model_type == '决策树':
-    model = DecisionTreeClassifier(random_state=0)
+    model = DecisionTreeClassifier(random_state=0, max_depth=max_depth)
     model.fit(X_train_scaled, Y_train)
 elif model_type == '随机森林':
-    model = RandomForestClassifier(n_estimators=100, random_state=0)
+    model = RandomForestClassifier(n_estimators=n_estimators, random_state=0)
     model.fit(X_train_scaled, Y_train)
 elif model_type == 'KNN':
-    model = KNeighborsClassifier()
+    model = KNeighborsClassifier(n_neighbors=n_neighbors)
     model.fit(X_train_scaled, Y_train)
 
 # 预测结果
@@ -78,4 +84,33 @@ fig, ax = plt.subplots(figsize=(6, 4))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
 st.pyplot(fig)
 
+# ROC 曲线和 AUC
+fpr, tpr, _ = roc_curve(Y_test, model.predict_proba(X_test_scaled)[:, 1])
+roc_auc = auc(fpr, tpr)
 
+fig_roc, ax_roc = plt.subplots(figsize=(6, 4))
+ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+ax_roc.set_xlim([0.0, 1.0])
+ax_roc.set_ylim([0.0, 1.05])
+ax_roc.set_xlabel('False Positive Rate')
+ax_roc.set_ylabel('True Positive Rate')
+ax_roc.set_title('Receiver Operating Characteristic')
+ax_roc.legend(loc="lower right")
+st.pyplot(fig_roc)
+
+# 特征重要性展示（仅对于树模型有效）
+if model_type in ['决策树', '随机森林']:
+    feature_importances = model.feature_importances_
+    features = predictors.columns
+    importance_df = pd.DataFrame({'Feature': features, 'Importance': feature_importances})
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+    st.write("特征重要性:")
+    st.write(importance_df)
+
+    # 绘制特征重要性图
+    fig_feat, ax_feat = plt.subplots(figsize=(8, 5))
+    sns.barplot(x='Importance', y='Feature', data=importance_df, ax=ax_feat)
+    ax_feat.set_title('特征重要性')
+    st.pyplot(fig_feat)
