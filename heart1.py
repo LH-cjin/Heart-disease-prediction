@@ -19,8 +19,8 @@ st.title("基于机器学习的心脏病预测")
 url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"
 data = pd.read_csv(url)
 
-# 显示数据的前几行
-st.write("数据示例", data.head())
+# 显示数据的前几行，调整表格样式
+st.write("数据示例", data)
 
 # 数据预处理：去除目标变量并分割数据
 predictors = data.drop("target", axis=1)
@@ -69,10 +69,14 @@ precision = precision_score(Y_test, y_pred)
 recall = recall_score(Y_test, y_pred)
 f1 = 2 * (precision * recall) / (precision + recall)
 
-st.write(f"准确率: {accuracy * 100:.2f}%")
-st.write(f"精确度: {precision * 100:.2f}%")
-st.write(f"召回率: {recall * 100:.2f}%")
-st.write(f"F1 分数: {f1 * 100:.2f}%")
+# 使用 st.table 展示评估结果的表格
+metrics_data = {
+    '指标': ['准确率', '精确度', '召回率', 'F1 分数'],
+    '值': [f"{accuracy * 100:.2f}%", f"{precision * 100:.2f}%", f"{recall * 100:.2f}%", f"{f1 * 100:.2f}%"]
+}
+
+metrics_df = pd.DataFrame(metrics_data)
+st.write("模型评估指标:", metrics_df)
 
 # 混淆矩阵
 cm = confusion_matrix(Y_test, y_pred)
