@@ -22,8 +22,8 @@ data = pd.read_csv(url)
 # 显示数据的前几行，调整表格样式
 st.write("数据示例")
 
-# 使用 st.dataframe 并调整大小来放大表格，适配所有15列
-st.dataframe(data, width=1500, height=500)  # 调整为适合的大小
+# 使用 st.dataframe 并调整大小来放大表格，适配所有15列，避免横向滚动
+st.dataframe(data, width=1500, height=500)  # 更大的宽度以适配15列，确保不滚动
 
 # 数据预处理：去除目标变量并分割数据
 predictors = data.drop("target", axis=1)
@@ -80,7 +80,7 @@ metrics_data = {
 
 metrics_df = pd.DataFrame(metrics_data)
 
-# 通过 st.table 放大评估表格
+# 通过 st.table 放大评估表格，字体居中
 st.table(metrics_df.style.set_table_styles([{
     'selector': 'table',
     'props': [('font-size', '20px'), ('width', '100%'), ('text-align', 'center')]
