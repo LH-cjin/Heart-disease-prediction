@@ -66,6 +66,12 @@ elif model_type == 'KNN':
 # 预测结果
 y_pred = model.predict(X_test_scaled)
 
+# 计算评估指标
+accuracy = accuracy_score(Y_test, y_pred)
+precision = precision_score(Y_test, y_pred)
+recall = recall_score(Y_test, y_pred)
+f1 = 2 * (precision * recall) / (precision + recall)
+
 # ------------------------ 评估指标美化 ------------------------
 # 创建指标表格
 metrics_data = {
@@ -95,16 +101,11 @@ styled_metrics = metrics_df.style \
 st.write("### 模型评估指标")
 st.table(styled_metrics)
 
-
-
-
-
+# ------------------------ 混淆矩阵显示优化 ------------------------
+cm = confusion_matrix(Y_test, y_pred)
 
 # 通过 st.columns 实现并排显示图表
 col1, col2 = st.columns(2)
-
-# ------------------------ 混淆矩阵显示优化 ------------------------
-cm = confusion_matrix(Y_test, y_pred)
 
 with col1:
     fig, ax = plt.subplots(figsize=(5, 3))
@@ -124,7 +125,7 @@ with col1:
     
     st.pyplot(fig)
 
-# ROC 曲线和 AUC
+# ------------------------ ROC 曲线和 AUC ------------------------
 fpr, tpr, _ = roc_curve(Y_test, model.predict_proba(X_test_scaled)[:, 1])
 roc_auc = auc(fpr, tpr)
 
