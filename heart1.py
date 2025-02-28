@@ -12,6 +12,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
+# 设置matplotlib支持中文
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 支持中文显示
+
 # Streamlit 标题
 st.title("基于机器学习的心脏病预测")
 
@@ -23,7 +26,9 @@ data = pd.read_csv(url)
 st.write("数据示例")
 
 # 使用 st.dataframe 并调整大小来放大表格，适配所有15列，避免横向滚动
-st.dataframe(data, width=1500, height=500)  # 更大的宽度以适配15列，确保不滚动
+# 计算列宽和最大展示列数来避免滚动条
+column_width = 100
+st.dataframe(data, width=column_width * len(data.columns), height=500)  # 根据列数自动适配
 
 # 数据预处理：去除目标变量并分割数据
 predictors = data.drop("target", axis=1)
