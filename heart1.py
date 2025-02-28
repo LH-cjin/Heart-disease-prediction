@@ -79,25 +79,31 @@ cm = confusion_matrix(Y_test, y_pred)
 st.write("混淆矩阵:")
 st.write(cm)
 
-# 绘制混淆矩阵
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
-st.pyplot(fig)
+# 通过 st.columns 实现并排显示图表
+col1, col2 = st.columns(2)
+
+# 混淆矩阵的图
+with col1:
+    fig, ax = plt.subplots(figsize=(5, 3))  # 缩小混淆矩阵图
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
+    ax.set_title("混淆矩阵")
+    st.pyplot(fig)
 
 # ROC 曲线和 AUC
 fpr, tpr, _ = roc_curve(Y_test, model.predict_proba(X_test_scaled)[:, 1])
 roc_auc = auc(fpr, tpr)
 
-fig_roc, ax_roc = plt.subplots(figsize=(6, 4))
-ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-ax_roc.set_xlim([0.0, 1.0])
-ax_roc.set_ylim([0.0, 1.05])
-ax_roc.set_xlabel('False Positive Rate')
-ax_roc.set_ylabel('True Positive Rate')
-ax_roc.set_title('Receiver Operating Characteristic')
-ax_roc.legend(loc="lower right")
-st.pyplot(fig_roc)
+with col2:
+    fig_roc, ax_roc = plt.subplots(figsize=(5, 3))  # 缩小 ROC 图
+    ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label='ROC 曲线 (AUC = %0.2f)' % roc_auc)
+    ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    ax_roc.set_xlim([0.0, 1.0])
+    ax_roc.set_ylim([0.0, 1.05])
+    ax_roc.set_xlabel('假阳性率 (False Positive Rate)')
+    ax_roc.set_ylabel('真阳性率 (True Positive Rate)')
+    ax_roc.set_title('接收操作特征曲线 (ROC Curve)')
+    ax_roc.legend(loc="lower right")
+    st.pyplot(fig_roc)
 
 # 特征重要性展示（仅对于树模型有效）
 if model_type in ['决策树', '随机森林']:
