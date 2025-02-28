@@ -19,11 +19,9 @@ st.title("基于机器学习的心脏病预测")
 url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"
 data = pd.read_csv(url)
 
-# 显示数据的前几行，调整表格样式
-st.write("数据示例")
-
-# 使用 st.dataframe 并调整大小来放大表格，适配所有15列，避免横向滚动
-st.dataframe(data, width=1500, height=500)  # 更大的宽度以适配15列，确保不滚动
+# 显示数据的前5行
+st.write("数据示例（前 5 行）：")
+st.write(data.head())  # 显示前5行数据
 
 # 数据预处理：去除目标变量并分割数据
 predictors = data.drop("target", axis=1)
@@ -111,17 +109,8 @@ with col1:
     fig, ax = plt.subplots(figsize=(5, 3))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
     
-    # 添加双语标题
-    try:
-        ax.set_title("混淆矩阵 (Confusion Matrix)", 
-                    fontsize=16, 
-                    weight='bold',
-                    color='black')
-    except:
-        ax.set_title("Confusion Matrix",
-                    fontsize=16,
-                    weight='bold',
-                    color='black')
+    # 添加英文标题
+    ax.set_title("Confusion Matrix", fontsize=16, weight='bold', color='black')  # 英文标题
     
     st.pyplot(fig)
 
