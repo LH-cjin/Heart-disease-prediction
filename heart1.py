@@ -20,7 +20,10 @@ url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/h
 data = pd.read_csv(url)
 
 # 显示数据的前几行，调整表格样式
-st.write("数据示例", data)
+st.write("数据示例")
+
+# 使用 st.dataframe 并调整大小来放大表格，适配所有15列
+st.dataframe(data, width=1500, height=500)  # 调整为适合的大小
 
 # 数据预处理：去除目标变量并分割数据
 predictors = data.drop("target", axis=1)
@@ -69,19 +72,22 @@ precision = precision_score(Y_test, y_pred)
 recall = recall_score(Y_test, y_pred)
 f1 = 2 * (precision * recall) / (precision + recall)
 
-# 使用 st.table 展示评估结果的表格
+# 使用 st.table 放大评估指标表格，展示准确率、精确度、召回率和F1分数
 metrics_data = {
     '指标': ['准确率', '精确度', '召回率', 'F1 分数'],
     '值': [f"{accuracy * 100:.2f}%", f"{precision * 100:.2f}%", f"{recall * 100:.2f}%", f"{f1 * 100:.2f}%"]
 }
 
 metrics_df = pd.DataFrame(metrics_data)
-st.write("模型评估指标:", metrics_df)
+
+# 通过 st.table 放大评估表格
+st.table(metrics_df.style.set_table_styles([{
+    'selector': 'table',
+    'props': [('font-size', '20px'), ('width', '100%'), ('text-align', 'center')]
+}]))
 
 # 混淆矩阵
 cm = confusion_matrix(Y_test, y_pred)
-st.write("混淆矩阵:")
-st.write(cm)
 
 # 通过 st.columns 实现并排显示图表
 col1, col2 = st.columns(2)
@@ -90,7 +96,7 @@ col1, col2 = st.columns(2)
 with col1:
     fig, ax = plt.subplots(figsize=(5, 3))  # 缩小混淆矩阵图
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
-    ax.set_title("混淆矩阵")
+    ax.set_title("混淆矩阵", fontsize=16, weight='bold', color='black')  # 中文标注
     st.pyplot(fig)
 
 # ROC 曲线和 AUC
