@@ -143,6 +143,4 @@ if st.button("🚀 预测心脏病风险"):
     else:
         st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}" if probability else "✅ 该患者心脏健康")
 
-## **🚀 运行应用**
-bash
-streamlit run app.py
+
