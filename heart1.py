@@ -124,60 +124,78 @@ st.subheader("🔍 进行实时心脏病预测")
 # **用户输入特征**
 user_input = {}
 
-# 1️⃣ **限定 age 必须为 0-120 的整数**
+# 1️⃣ **age（年龄）**: 限定 0-120 岁
 user_input['age'] = st.number_input("年龄 (age) 📌 请输入 0-120 之间的整数", 
                                     min_value=0, max_value=120, value=40, step=1, format="%d")
 
-# 2️⃣ **sex 只能输入 0（女性）或 1（男性）**
+# 2️⃣ **sex（性别）**: 0（女性）或 1（男性）
 user_input['sex'] = st.radio("性别 (sex) 📌 0: 女性 👩  |  1: 男性 👨", options=[0, 1])
 
-# 3️⃣ **cp（胸痛类型），提供描述**
-cp_options = {0: "典型心绞痛", 1: "非典型心绞痛", 2: "非心绞痛", 3: "无症状"}
-user_input['cp'] = st.selectbox("胸痛类型 (cp) 📌 选择 0-3", options=list(cp_options.keys()), format_func=lambda x: f"{x}: {cp_options[x]}")
+# 3️⃣ **cp（胸痛类型）**: 选择 0-3，并提供医学描述
+cp_options = {0: "典型心绞痛（心脏供血不足）", 
+              1: "非典型心绞痛（轻微不适）", 
+              2: "非心绞痛（其他原因胸痛）", 
+              3: "无症状（隐性心脏病风险）"}
+user_input['cp'] = st.selectbox("胸痛类型 (cp) 📌 选择 0-3", 
+                                options=list(cp_options.keys()), format_func=lambda x: f"{x}: {cp_options[x]}")
 
-# 4️⃣ **trestbps（静息血压），范围 94-200 mm Hg**
-user_input['trestbps'] = st.number_input("静息血压 (trestbps) 📌 请输入 94-200 mm Hg",
-                                         min_value=94, max_value=200, value=120)
+# 4️⃣ **trestbps（静息血压）**: 正常 90-130 mmHg，>140 为高血压
+user_input['trestbps'] = st.number_input("静息血压 (trestbps) 📌 请输入 90-200 mmHg", 
+                                         min_value=90, max_value=200, value=120)
+if user_input['trestbps'] > 140:
+    st.warning("⚠️ 高血压警告：静息血压高于 140 mmHg，建议检查！")
 
-# 5️⃣ **chol（胆固醇），范围 126-564 mg/dl**
-user_input['chol'] = st.number_input("胆固醇 (chol) 📌 请输入 126-564 mg/dl",
+# 5️⃣ **chol（胆固醇）**: 正常 <200 mg/dl，>240 为高胆固醇
+user_input['chol'] = st.number_input("胆固醇 (chol) 📌 请输入 126-564 mg/dl", 
                                      min_value=126, max_value=564, value=200)
+if user_input['chol'] > 240:
+    st.warning("⚠️ 胆固醇过高：胆固醇高于 240 mg/dl，可能增加动脉硬化风险！")
 
-# 6️⃣ **fbs（空腹血糖 >120 mg/dl）**
-user_input['fbs'] = st.radio("空腹血糖 (fbs) 📌 >120mg/dl？ 1: 是  |  0: 否", options=[0, 1])
+# 6️⃣ **fbs（空腹血糖）**: >120 mg/dl 选择 1，否则选 0
+user_input['fbs'] = st.radio("空腹血糖 (fbs) 📌 >120 mg/dl？ 1: 是 | 0: 否", options=[0, 1])
 
-# 7️⃣ **restecg（心电图结果）**
-restecg_options = {0: "正常", 1: "ST-T 波异常", 2: "左心室肥大"}
-user_input['restecg'] = st.selectbox("心电图结果 (restecg) 📌 选择 0-2", options=list(restecg_options.keys()), format_func=lambda x: f"{x}: {restecg_options[x]}")
+# 7️⃣ **restecg（心电图）**: 0（正常），1（ST-T 波异常），2（左心室肥大）
+restecg_options = {0: "正常", 1: "ST-T 波异常（心脏供血不足）", 2: "左心室肥大（高血压相关）"}
+user_input['restecg'] = st.selectbox("心电图 (restecg) 📌 选择 0-2", 
+                                     options=list(restecg_options.keys()), format_func=lambda x: f"{x}: {restecg_options[x]}")
 
-# 8️⃣ **thalach（最大心率），范围 71-202**
-user_input['thalach'] = st.number_input("最大心率 (thalach) 📌 请输入 71-202",
-                                        min_value=71, max_value=202, value=150)
+# 8️⃣ **thalach（最大心率）**: >140 bpm 为正常，<100 可能有心脏病
+user_input['thalach'] = st.number_input("最大心率 (thalach) 📌 请输入 70-210 bpm", 
+                                        min_value=70, max_value=210, value=150)
+if user_input['thalach'] < 100:
+    st.warning("⚠️ 最大心率过低：可能存在心脏疾病，请咨询医生！")
 
-# 9️⃣ **exang（运动诱发心绞痛）**
-user_input['exang'] = st.radio("运动诱发心绞痛 (exang) 📌 1: 是  |  0: 否", options=[0, 1])
+# 9️⃣ **exang（运动诱发心绞痛）**: 0（否），1（是）
+user_input['exang'] = st.radio("运动诱发心绞痛 (exang) 📌 1: 是 | 0: 否", options=[0, 1])
+if user_input['exang'] == 1:
+    st.warning("⚠️ 运动诱发心绞痛可能是冠心病的信号，请关注！")
 
-# 🔟 **oldpeak（运动诱发 ST 段压低），范围 0-6.2**
+# 🔟 **oldpeak（ST 段压低）**: <1.0 为正常，>2.0 表示缺血风险
 user_input['oldpeak'] = st.number_input("ST 段压低 (oldpeak) 📌 请输入 0-6.2", 
                                         min_value=0.0, max_value=6.2, value=1.0, step=0.1)
+if user_input['oldpeak'] > 2.0:
+    st.warning("⚠️ ST 段下降较明显，可能表示心肌缺血！")
 
-# 1️⃣1️⃣ **slope（ST 段变化坡度）**
-slope_options = {1: "上坡", 2: "平坦", 3: "下坡"}
-user_input['slope'] = st.selectbox("ST 段坡度 (slope) 📌 选择 1-3", options=list(slope_options.keys()), format_func=lambda x: f"{x}: {slope_options[x]}")
+# 1️⃣1️⃣ **slope（ST 段坡度）**: 1（上坡），2（平坦），3（下坡）
+slope_options = {1: "上坡（良好）", 2: "平坦（中等风险）", 3: "下坡（高风险）"}
+user_input['slope'] = st.selectbox("ST 段坡度 (slope) 📌 选择 1-3", 
+                                   options=list(slope_options.keys()), format_func=lambda x: f"{x}: {slope_options[x]}")
+if user_input['slope'] == 3:
+    st.warning("⚠️ ST 段下坡可能表示心脏供血不足！")
 
-# 1️⃣2️⃣ **ca（主要血管数量），只能输入 0-3**
-user_input['ca'] = st.slider("主要血管数量 (ca) 📌 请输入 0-3", min_value=0, max_value=3, value=1)
+# 1️⃣2️⃣ **ca（主要血管数）**: 0 为正常，>1 代表动脉堵塞风险
+user_input['ca'] = st.slider("主要血管数 (ca) 📌 请输入 0-3", min_value=0, max_value=3, value=1)
+if user_input['ca'] > 1:
+    st.warning("⚠️ 主要血管数 >1，可能存在动脉硬化风险！")
 
-# 1️⃣3️⃣ **thal（地中海贫血类型）**
-thal_options = {1: "固定缺陷", 2: "正常", 3: "可逆缺陷"}
-user_input['thal'] = st.selectbox("地中海贫血类型 (thal) 📌 选择 1-3", options=list(thal_options.keys()), format_func=lambda x: f"{x}: {thal_options[x]}")
+# 1️⃣3️⃣ **thal（地中海贫血类型）**: 1（固定缺陷），2（正常），3（可逆缺陷）
+thal_options = {1: "固定缺陷（长期心脏病变）", 2: "正常", 3: "可逆缺陷（心脏供血不足）"}
+user_input['thal'] = st.selectbox("地中海贫血类型 (thal) 📌 选择 1-3", 
+                                  options=list(thal_options.keys()), format_func=lambda x: f"{x}: {thal_options[x]}")
 
 # **数据转换 & 预测**
 if st.button("🚀 预测心脏病风险"):
     user_input_df = pd.DataFrame([user_input])  # 转换为 DataFrame
-
-    # **确保用户输入数据的列顺序与训练数据一致**
-    user_input_df = user_input_df[X_train.columns]  # 调整列顺序
     user_input_scaled = scaler.transform(user_input_df)  # 标准化
 
     # **进行预测**
@@ -189,6 +207,4 @@ if st.button("🚀 预测心脏病风险"):
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}" if probability else "⚠️ 该患者可能有心脏病")
     else:
         st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}" if probability else "✅ 该患者心脏健康")
-
-
 
