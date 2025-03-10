@@ -196,27 +196,51 @@ if st.button("🚀 预测心脏病风险"):
 
     # **检测异常变量**
     abnormal_vars = []
+    warnings = []
+
+    # 1️⃣ 静息血压
     if user_input['trestbps'] > 140:
         abnormal_vars.append("静息血压高")
+        warnings.append("⚠️ **高血压风险**：建议监测血压，并咨询医生进行调控。")
+
+    # 2️⃣ 胆固醇
     if user_input['chol'] > 240:
         abnormal_vars.append("胆固醇过高")
+        warnings.append("⚠️ **高胆固醇**：可能增加动脉硬化风险，建议控制饮食和运动。")
+
+    # 3️⃣ 最大心率
     if user_input['thalach'] < 100:
         abnormal_vars.append("最大心率过低")
+        warnings.append("⚠️ **心率偏低**：可能表示心脏功能异常，建议进一步检查。")
+
+    # 4️⃣ ST 段压低
     if user_input['oldpeak'] > 2.0:
         abnormal_vars.append("ST 段压低过高")
+        warnings.append("⚠️ **ST 段下降显著**：可能提示心肌缺血，建议做心电图或冠状动脉造影。")
+
+    # 5️⃣ 主要血管数
     if user_input['ca'] > 1:
         abnormal_vars.append("主要血管数异常")
+        warnings.append("⚠️ **血管堵塞风险**：建议进一步检查动脉硬化情况。")
+
+    # 6️⃣ ST 段坡度
     if user_input['slope'] == 3:
         abnormal_vars.append("ST 段坡度异常")
+        warnings.append("⚠️ **ST 段下坡**：可能提示心脏供血不足，建议检查冠心病风险。")
 
     # **显示预测结果**
     if prediction == 1:
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}")
         if abnormal_vars:
-            st.warning("🚨 **异常指标**：" + "，".join(abnormal_vars))
+            st.warning("🚨 **检测到异常指标**：" + "，".join(abnormal_vars))
+            for warning in warnings:
+                st.warning(warning)
     else:
         st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}")
-
+        if abnormal_vars:
+            st.info("🔍 **虽然整体风险较低，但以下指标偏离正常范围，请关注**：")
+            for warning in warnings:
+                st.info(warning)
 
 
 
