@@ -116,11 +116,7 @@ if model_type in ['决策树', '随机森林']:
     # **显示特征重要性表格**
     st.write(importance_df)
 
-    # **绘制特征重要性柱状图**
-    fig_feat, ax_feat = plt.subplots(figsize=(6, 4))
-    sns.barplot(x='重要性', y='特征', data=importance_df, ax=ax_feat)
-    ax_feat.set_title('Feature Importance')
-    st.pyplot(fig_feat)
+   
 
 # **实时心脏病预测**
 st.subheader("🔍 进行实时心脏病预测")
