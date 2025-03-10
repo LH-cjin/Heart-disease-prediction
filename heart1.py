@@ -16,8 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 # 手动加载字体
 font_path = "C:/Windows/Fonts/simhei.ttf"  # Windows
-# font_path = "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttf"  # Linux
-# font_path = "/System/Library/Fonts/Supplemental/Songti.ttc"  # macOS
+
 
 my_font = fm.FontProperties(fname=font_path)
 
