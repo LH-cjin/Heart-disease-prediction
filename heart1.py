@@ -12,6 +12,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体（黑体）
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号无法显示问题
+
+
 # 设置 Streamlit 页面配置
 st.set_page_config(page_title="心脏病预测", page_icon="❤️", layout="wide")
 
@@ -98,8 +104,9 @@ with col2:
         ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
         ax_roc.set_xlim([0.0, 1.0])
         ax_roc.set_ylim([0.0, 1.05])
-        ax_roc.set_xlabel('假阳性率 (FPR)')
-        ax_roc.set_ylabel('真阳性率 (TPR)')
+        ax_roc.set_xlabel('假阳性率 (FPR)', fontsize=12)
+        ax_roc.set_ylabel('真阳性率 (TPR)', fontsize=12)
+
         ax_roc.set_title('ROC Curve')
         ax_roc.legend(loc="lower right")
         st.pyplot(fig_roc)
