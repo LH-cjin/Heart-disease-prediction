@@ -125,16 +125,38 @@ if model_type in ['决策树', '随机森林']:
 # 🎯 **实时预测：用户输入数据**
 st.subheader("🔍 进行实时心脏病预测")
 
+
 # **用户输入特征**
-user_input = []
-for feature in predictors.columns:
-    value = st.number_input(f"输入 {feature}", float(X_train[feature].min()), float(X_train[feature].max()), float(X_train[feature].mean()))
-    user_input.append(value)
+user_input = {}
+
+# 1️⃣ **限定 age 必须为 0-120 的整数**
+user_input['age'] = st.number_input("年龄 (age)", min_value=0, max_value=120, value=40, step=1, format="%d")
+
+# 2️⃣ **限定 sex 只能输入 0（女性）或 1（男性）**
+user_input['sex'] = st.selectbox("性别 (sex)", options=[0, 1], format_func=lambda x: "👩 女性" if x == 0 else "👨 男性")
+
+# 3️⃣ **限定 cp（胸痛类型），提供描述**
+cp_options = {
+    0: "典型心绞痛",
+    1: "非典型心绞痛",
+    2: "非心绞痛",
+    3: "无症状"
+}
+user_input['cp'] = st.selectbox("胸痛类型 (cp)", options=list(cp_options.keys()), format_func=lambda x: f"{x}: {cp_options[x]}")
+
+# 4️⃣ **限定 trestbps（静息血压），范围 94-200 mm Hg**
+user_input['trestbps'] = st.number_input("静息血压 (trestbps) (mm Hg)", min_value=94, max_value=200, value=120)
+
+# **继续输入其他变量（示例）**
+user_input['chol'] = st.number_input("胆固醇 (chol) (mg/dl)", min_value=126, max_value=564, value=200)
+user_input['thalach'] = st.number_input("最大心率 (thalach)", min_value=70, max_value=210, value=150)
 
 # **进行预测**
 if st.button("🚀 预测心脏病风险"):
-    user_input_scaled = scaler.transform([user_input])
-    prediction = model.predict(user_input_scaled)[0]
+    # 预处理输入数据
+    user_input_df = pd.DataFrame([user_input])  # 转换为 DataFrame
+    user_input_scaled = scaler.transform(user_input_df)  # 标准化
+    prediction = model.predict(user_input_scaled)[0]  # 预测类别
     probability = model.predict_proba(user_input_scaled)[0][1] if hasattr(model, "predict_proba") else None
 
     # **显示预测结果**
@@ -142,4 +164,6 @@ if st.button("🚀 预测心脏病风险"):
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}" if probability else "⚠️ 该患者可能有心脏病")
     else:
         st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}" if probability else "✅ 该患者心脏健康")
+
+
 
