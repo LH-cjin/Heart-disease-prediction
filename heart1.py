@@ -12,13 +12,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
-
-
-
-my_font = fm.FontProperties(fname=font_path)
-
-
-
 # 设置 Streamlit 页面配置
 st.set_page_config(page_title="心脏病预测", page_icon="❤️", layout="wide")
 
@@ -107,8 +100,6 @@ with col2:
         ax_roc.set_ylim([0.0, 1.05])
         ax_roc.set_xlabel('FPR')
         ax_roc.set_ylabel('TPR')
- 
-
         ax_roc.set_title('ROC Curve')
         ax_roc.legend(loc="lower right")
         st.pyplot(fig_roc)
@@ -151,5 +142,4 @@ if st.button("🚀 预测心脏病风险"):
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}" if probability else "⚠️ 该患者可能有心脏病")
     else:
         st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}" if probability else "✅ 该患者心脏健康")
-
 
