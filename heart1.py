@@ -13,9 +13,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 from sklearn.preprocessing import StandardScaler
 
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+# 手动加载字体
+font_path = "C:/Windows/Fonts/simhei.ttf"  # Windows
+# font_path = "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttf"  # Linux
+# font_path = "/System/Library/Fonts/Supplemental/Songti.ttc"  # macOS
 
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体（黑体）
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号无法显示问题
+my_font = fm.FontProperties(fname=font_path)
+
 
 
 # 设置 Streamlit 页面配置
@@ -104,8 +109,9 @@ with col2:
         ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
         ax_roc.set_xlim([0.0, 1.0])
         ax_roc.set_ylim([0.0, 1.05])
-        ax_roc.set_xlabel('假阳性率 (FPR)', fontsize=12)
-        ax_roc.set_ylabel('真阳性率 (TPR)', fontsize=12)
+        ax_roc.set_xlabel('假阳性率 (FPR)', fontproperties=my_font, fontsize=12)
+        ax_roc.set_ylabel('真阳性率 (TPR)', fontproperties=my_font, fontsize=12)
+ 
 
         ax_roc.set_title('ROC Curve')
         ax_roc.legend(loc="lower right")
