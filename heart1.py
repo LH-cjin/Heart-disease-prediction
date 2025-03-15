@@ -13,37 +13,37 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 from sklearn.preprocessing import StandardScaler
  
  # 设置 Streamlit 页面配置
- st.set_page_config(page_title="心脏病预测", page_icon="❤️", layout="wide")
+st.set_page_config(page_title="心脏病预测", page_icon="❤️", layout="wide")
  
  # Streamlit 标题
- st.title("💖 基于机器学习的心脏病预测")
+st.title("💖 基于机器学习的心脏病预测")
  
  # 从 GitHub 读取 CSV 数据
- url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"
- data = pd.read_csv(url)
+url = "https://raw.githubusercontent.com/LH-cjin/Heart-disease-prediction/main/heart.csv"
+data = pd.read_csv(url)
  
  # 显示数据的前 5 行
- st.subheader("📊 数据示例（前 5 行）")
- st.write(data.head())
+st.subheader("📊 数据示例（前 5 行）")
+st.write(data.head())
  
  # 分割数据集
- predictors = data.drop("target", axis=1)
- target = data["target"]
- X_train, X_test, Y_train, Y_test = train_test_split(predictors, target, test_size=0.20, random_state=0)
+predictors = data.drop("target", axis=1)
+target = data["target"]
+X_train, X_test, Y_train, Y_test = train_test_split(predictors, target, test_size=0.20, random_state=0)
  
  # 特征标准化
- scaler = StandardScaler()
- X_train_scaled = scaler.fit_transform(X_train)
- X_test_scaled = scaler.transform(X_test)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
  
  # 🎯 **侧边栏：模型选择和超参数**
- st.sidebar.header('🛠 选择模型和超参数')
- model_type = st.sidebar.selectbox('📌 选择一个模型', ['逻辑回归', '朴素贝叶斯', '决策树', '随机森林', 'KNN'])
+st.sidebar.header('🛠 选择模型和超参数')
+model_type = st.sidebar.selectbox('📌 选择一个模型', ['逻辑回归', '朴素贝叶斯', '决策树', '随机森林', 'KNN'])
  
  # **超参数设置**
- max_depth = st.sidebar.slider('🌳 决策树最大深度', 1, 20, 5) if model_type == '决策树' else None
- n_estimators = st.sidebar.slider('🌲 随机森林树数', 10, 200, 100) if model_type == '随机森林' else None
- n_neighbors = st.sidebar.slider('👥 KNN 邻居数', 1, 20, 5) if model_type == 'KNN' else None
+max_depth = st.sidebar.slider('🌳 决策树最大深度', 1, 20, 5) if model_type == '决策树' else None
+n_estimators = st.sidebar.slider('🌲 随机森林树数', 10, 200, 100) if model_type == '随机森林' else None
+n_neighbors = st.sidebar.slider('👥 KNN 邻居数', 1, 20, 5) if model_type == 'KNN' else None
  
  # **训练模型**
  if model_type == '逻辑回归':
