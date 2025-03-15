@@ -73,27 +73,37 @@ metrics_data = pd.DataFrame({
 })
 st.table(metrics_data)
 
-# 画出混淆矩阵
-st.subheader("📌 混淆矩阵")
-fig, ax = plt.subplots(figsize=(4, 3))
-sns.heatmap(confusion_matrix(Y_test, y_pred), annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
-st.pyplot(fig)
+# 📊 **并排显示：混淆矩阵 & ROC 曲线**
+col1, col2 = st.columns(2)
 
-# 画出 ROC 曲线
-st.subheader("📈 ROC 曲线 & AUC")
-if hasattr(model, "predict_proba"):
-    fpr, tpr, _ = roc_curve(Y_test, model.predict_proba(X_test_scaled)[:, 1])
-    roc_auc = auc(fpr, tpr)
-    fig_roc, ax_roc = plt.subplots(figsize=(4, 3))
-    ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC (AUC = {roc_auc:.2f})')
-    ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    ax_roc.set_xlabel('FPR')
-    ax_roc.set_ylabel('TPR')
-    ax_roc.set_title('ROC Curve')
-    ax_roc.legend(loc="lower right")
-    st.pyplot(fig_roc)
-else:
-    st.write("❌ 该模型不支持概率预测，无法绘制 ROC 曲线")
+# **混淆矩阵**
+with col1:
+    st.subheader("📌 混淆矩阵")
+    fig, ax = plt.subplots(figsize=(4, 3))
+    sns.heatmap(confusion_matrix(Y_test, y_pred), annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
+    ax.set_title("Confusion Matrix", fontsize=14, color='black')
+    st.pyplot(fig)
+
+# **ROC 曲线 & AUC**
+with col2:
+    st.subheader("📈 ROC 曲线 & AUC")
+    if hasattr(model, "predict_proba"):  # 确保模型支持 `predict_proba()`
+        fpr, tpr, _ = roc_curve(Y_test, model.predict_proba(X_test_scaled)[:, 1])
+        roc_auc = auc(fpr, tpr)
+
+        fig_roc, ax_roc = plt.subplots(figsize=(4, 3))
+        ax_roc.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC (AUC = {roc_auc:.2f})')
+        ax_roc.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+        ax_roc.set_xlim([0.0, 1.0])
+        ax_roc.set_ylim([0.0, 1.05])
+        ax_roc.set_xlabel('FPR')
+        ax_roc.set_ylabel('TPR')
+        ax_roc.set_title('ROC Curve')
+        ax_roc.legend(loc="lower right")
+        st.pyplot(fig_roc)
+    else:
+        st.write("❌ 该模型不支持概率预测，无法绘制 ROC 曲线")
+
 # 🌟 **特征重要性（仅适用于树模型）**
 if model_type in ['决策树', '随机森林']:
     st.subheader("🌲 特征重要性")
