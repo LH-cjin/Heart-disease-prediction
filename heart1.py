@@ -208,9 +208,16 @@ if st.button("🚀 预测心脏病风险"):
         abnormal_vars.append("ST 段坡度异常")
         warnings.append("⚠️ **ST 段下坡**：可能提示心脏供血不足，建议检查冠心病风险。")
 
-    # **显示预测结果**
+     # **显示预测结果**
     if prediction == 1:
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}")
         if abnormal_vars:
-            st.warning("🚨 **异常指标**：" +
-
+            st.warning("🚨 **异常指标**：" + "，".join(abnormal_vars))
+            for warning in warnings:
+                st.warning(warning)
+    else:
+        st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}")
+        if abnormal_vars:
+            st.info("🔍 **虽然整体风险较低，但以下指标偏离正常范围，请关注**：")
+            for warning in warnings:
+                st.info(warning)
