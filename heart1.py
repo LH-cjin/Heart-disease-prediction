@@ -184,6 +184,16 @@ user_input['slope'] = st.selectbox("📈 ST 段坡度 (slope) 📌 选择 1-3",
 
 if user_input['slope'] == 3:
     st.warning("⚠️ **ST 段下坡可能表示心脏供血不足！**")
+# 1️⃣2️⃣ **主要血管数量（ca）**
+user_input['ca'] = st.selectbox("🩺 主要血管数量 (ca) 📌 选择 0-4",
+                                options=[0, 1, 2, 3, 4])
+
+# 1️⃣3️⃣ **地中海贫血类型（thal）**
+thal_options = {0: "无数据", 1: "正常血流", 2: "固定缺血", 3: "可逆缺血"}
+user_input['thal'] = st.selectbox("🧬 地中海贫血类型 (thal) 📌 选择 1-3",
+                                  options=list(thal_options.keys()),
+                                  format_func=lambda x: f"{x}: {thal_options[x]}")
+
 
 if st.button("🚀 预测心脏病风险"):
     user_input_df = pd.DataFrame([user_input])  # 转换为 DataFrame
