@@ -188,60 +188,50 @@ if user_input['slope'] == 3:
 if st.button("🚀 预测心脏病风险"):
     user_input_df = pd.DataFrame([user_input])  # 转换为 DataFrame
 
-    # **确保用户输入数据的特征顺序与训练时一致**
-    expected_features = scaler.feature_names_in_ if hasattr(scaler, 'feature_names_in_') else model.feature_names_in_
-    
-    # **检查并调整数据顺序**
+    # **检查特征名称**
+    if hasattr(scaler, "feature_names_in_"):
+        expected_features = scaler.feature_names_in_
+    else:
+        expected_features = X_train.columns
+
+    missing_features = set(expected_features) - set(user_input_df.columns)
+    if missing_features:
+        st.error(f"❌ 输入数据缺少以下特征: {missing_features}")
+        st.stop()
+
+    # **调整列顺序**
     user_input_df = user_input_df[expected_features]
 
-    # **确保数据类型一致（全部转换为 float）**
-    user_input_df = user_input_df.astype(float)
+    # **转换数据类型**
+    for col in user_input_df.columns:
+        user_input_df[col] = pd.to_numeric(user_input_df[col], errors='coerce')
+
+    if user_input_df.isna().sum().sum() > 0:
+        st.error("❌ 输入数据包含无法转换的非数值数据，请检查输入格式！")
+        st.write(user_input_df)  # 显示数据供调试
+        st.stop()
+
+    # **检查数据形状**
+    if user_input_df.shape[1] != X_train.shape[1]:
+        st.error(f"❌ 输入特征数 ({user_input_df.shape[1]}) 与训练时 ({X_train.shape[1]}) 不匹配！")
+        st.write("输入数据:", user_input_df.columns)
+        st.write("训练数据:", X_train.columns)
+        st.stop()
 
     # **标准化数据**
     try:
-        user_input_scaled = scaler.transform(user_input_df)  # 标准化
+        user_input_scaled = scaler.transform(user_input_df)
     except ValueError as e:
-        st.error("🚨 数据转换失败，请检查输入数据是否完整并符合格式要求！")
+        st.error(f"🚨 数据转换失败：{e}")
         st.stop()
 
     # **进行预测**
     prediction = model.predict(user_input_scaled)[0]
     probability = model.predict_proba(user_input_scaled)[0][1] if hasattr(model, "predict_proba") else None
 
-    # **异常指标检查**
-    abnormal_vars = []
-    warnings = []
-
-    if user_input['trestbps'] > 140:
-        abnormal_vars.append("静息血压高")
-        warnings.append("⚠️ **高血压风险**：建议监测血压，并咨询医生进行调控。")
-
-    if user_input['chol'] > 240:
-        abnormal_vars.append("胆固醇过高")
-        warnings.append("⚠️ **高胆固醇**：可能增加动脉硬化风险，建议控制饮食和运动。")
-
-    if user_input['thalach'] < 100:
-        abnormal_vars.append("最大心率过低")
-        warnings.append("⚠️ **心率偏低**：可能表示心脏功能异常，建议进一步检查。")
-
-    if user_input['oldpeak'] > 2.0:
-        abnormal_vars.append("ST 段压低过高")
-        warnings.append("⚠️ **ST 段下降显著**：可能提示心肌缺血，建议做心电图或冠状动脉造影。")
-
-    if user_input['slope'] == 3:
-        abnormal_vars.append("ST 段坡度异常")
-        warnings.append("⚠️ **ST 段下坡**：可能提示心脏供血不足，建议检查冠心病风险。")
-
     # **显示预测结果**
     if prediction == 1:
-        st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}")
-        if abnormal_vars:
-            st.warning("🚨 **异常指标**：" + "，".join(abnormal_vars))
-            for warning in warnings:
-                st.warning(warning)
+        st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}" if probability is not None else "⚠️ 该患者可能有心脏病")
     else:
-        st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}")
-        if abnormal_vars:
-            st.info("🔍 **虽然整体风险较低，但以下指标偏离正常范围，请关注**：")
-            for warning in warnings:
-                st.info(warning)
+        st.success(f"✅ 该患者心脏健康，风险概率: {probability:.2f}" if probability is not None else "✅ 该患者心脏健康")
+
