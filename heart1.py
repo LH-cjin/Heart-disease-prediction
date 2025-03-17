@@ -185,10 +185,24 @@ user_input['slope'] = st.selectbox("📈 ST 段坡度 (slope) 📌 选择 1-3",
 if user_input['slope'] == 3:
     st.warning("⚠️ **ST 段下坡可能表示心脏供血不足！**")
 
-# **数据转换 & 预测**
 if st.button("🚀 预测心脏病风险"):
     user_input_df = pd.DataFrame([user_input])  # 转换为 DataFrame
-    user_input_scaled = scaler.transform(user_input_df)  # 标准化
+
+    # **确保用户输入数据的特征顺序与训练时一致**
+    expected_features = scaler.feature_names_in_ if hasattr(scaler, 'feature_names_in_') else model.feature_names_in_
+    
+    # **检查并调整数据顺序**
+    user_input_df = user_input_df[expected_features]
+
+    # **确保数据类型一致（全部转换为 float）**
+    user_input_df = user_input_df.astype(float)
+
+    # **标准化数据**
+    try:
+        user_input_scaled = scaler.transform(user_input_df)  # 标准化
+    except ValueError as e:
+        st.error("🚨 数据转换失败，请检查输入数据是否完整并符合格式要求！")
+        st.stop()
 
     # **进行预测**
     prediction = model.predict(user_input_scaled)[0]
@@ -218,7 +232,7 @@ if st.button("🚀 预测心脏病风险"):
         abnormal_vars.append("ST 段坡度异常")
         warnings.append("⚠️ **ST 段下坡**：可能提示心脏供血不足，建议检查冠心病风险。")
 
-     # **显示预测结果**
+    # **显示预测结果**
     if prediction == 1:
         st.error(f"⚠️ 该患者可能有心脏病，风险概率: {probability:.2f}")
         if abnormal_vars:
